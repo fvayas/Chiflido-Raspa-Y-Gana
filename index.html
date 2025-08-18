@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rasca & Gana — El Chiflido</title>
+  <meta name="description" content="Rasca, revela tu premio y canjéalo por WhatsApp." />
+  <!-- Tailwind CDN (runtime) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React 18 UMD + Babel for in-browser JSX -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* Usa Sink si está instalada en el equipo */
+    @font-face {
+      font-family: 'Sink';
+      src: local('Sink'), local('Sink Regular'), local('Sink-Regular');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    const {useEffect, useRef, useState} = React;
+
+    // Promos rotativas (tus textos y códigos)
+    const PRIZES = [
+      { id: "jamaica-8usd", title: "Jamaica gratis", desc: "Recibe una jamaica gratis por una compra superior a $8.", code: "PROMO1202", prob: 25 },
+      { id: "tacos-1usd", title: "¡Hoy todos tus tacos a $1!", desc: "Aplica para ti y tu acompañante, sin importar el día.", code: "PROMO2203", prob: 20 },
+      { id: "flautas-pack", title: "2 Flautas + 2 Bebidas por $12", desc: "Llévalo presentando tu código al pagar.", code: "PROMO3204", prob: 18 },
+      { id: "birria-pack", title: "2 Órdenes de birria + bebida por $14", desc: "Disfrútalo en local, sujeto a disponibilidad.", code: "PROMO4205", prob: 15 },
+      { id: "marquesita-mini", title: "Mini marquesita GRATIS", desc: "Por compra de 2 platos + 2 bebidas.", code: "PROMO5206", prob: 12 },
+      { id: "chilaquiles-pack", title: "2 Chilaquiles + bebida por $14", desc: "Elige tu bebida disponible del día.", code: "PROMO6207", prob: 10 },
+    ];
+
+    function pickPrize(prizes) {
+      const roll = Math.random() * 100;
+      let acc = 0;
+      for (const p of prizes) { acc += p.prob; if (roll <= acc) return p; }
+      return prizes[Math.floor(Math.random() * prizes.length)];
+    }
+
+    function App(){
+      const containerRef = useRef(null);
+      const canvasRef = useRef(null);
+      const ctxRef = useRef(null);
+      const [prize, setPrize] = useState(null);
+      const [progress, setProgress] = useState(0);
+      const [isScratchedEnough, setIsScratchedEnough] = useState(false);
+      const [isDrawing, setIsDrawing] = useState(false);
+      const [logoUrl, setLogoUrl] = useState(null);
+
+      const WA_BASE = "https://api.whatsapp.com/send?phone=593979342895&text=Hola%20quisiera%20reclamar%20mi%20promoci%C3%B3n%20mi%20c%C3%B3digo%20es:%20";
+
+      useEffect(() => { resetCard(); }, []);
+      useEffect(() => {
+        const setup = () => setupCanvas();
+        let ro;
+        if (window.ResizeObserver) {
+          ro = new ResizeObserver(setup);
+          if (containerRef.current) ro.observe(containerRef.current);
+        } else { window.addEventListener("resize", setup); }
+        return () => {
+          if (ro && containerRef.current) ro.disconnect();
+          else window.removeEventListener("resize", setup);
+        };
+      }, []);
+      useEffect(() => {
+        try { const saved = localStorage.getItem("chiflido_logo_url"); if (saved) setLogoUrl(saved); } catch {}
+      }, []);
+
+      const setupCanvas = () => {
+        const canvas = canvasRef.current; const container = containerRef.current; if (!canvas || !container) return;
+        const width = container.clientWidth; const height = 260;
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        canvas.width = Math.floor(width * dpr); canvas.height = Math.floor(height * dpr);
+        canvas.style.width = width + "px"; canvas.style.height = height + "px";
+
+        const ctx = canvas.getContext("2d", { willReadFrequently: true }); if (!ctx) return;
+        ctxRef.current = ctx; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // Overlay negro para raspar
+        ctx.fillStyle = "#000"; ctx.fillRect(0, 0, width, height);
+        const fontSize = Math.max(24, Math.min(42, Math.floor(width * 0.055)));
+        ctx.fillStyle = "rgba(255,255,255,0.97)";
+        ctx.font = `800 ${fontSize}px 'Sink', ui-serif, Georgia, Cambria`;
+        ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillText("Rasca aquí para descubrir tu premio", width / 2, height / 2);
+
+        ctx.globalCompositeOperation = "destination-out";
+        setProgress(0); setIsScratchedEnough(false);
+      };
+
+      const resetCard = () => { setPrize(pickPrize(PRIZES)); setTimeout(setupCanvas, 0); };
+
+      const getPos = (e) => {
+        const rect = canvasRef.current.getBoundingClientRect();
+        if (e.touches && e.touches[0]) { const t = e.touches[0]; return { x: t.clientX - rect.left, y: t.clientY - rect.top }; }
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      };
+      const scratchAt = (x, y) => { const ctx = ctxRef.current; if (!ctx) return; const r = 24; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); };
+      const handleStart = (e) => { e.preventDefault(); setIsDrawing(true); const { x, y } = getPos(e); scratchAt(x, y); };
+      const handleMove = (e) => { if (!isDrawing) return; e.preventDefault(); const { x, y } = getPos(e); scratchAt(x, y); };
+      const handleEnd = () => { setIsDrawing(false); calculateProgress(); };
+
+      const calculateProgress = () => {
+        const canvas = canvasRef.current, ctx = ctxRef.current; if (!canvas || !ctx) return;
+        const { width, height } = canvas; const data = ctx.getImageData(0, 0, width, height).data; let cleared = 0;
+        for (let i = 3; i < data.length; i += 4) if (data[i] === 0) cleared++;
+        const pct = (cleared / (data.length / 4)) * 100; setProgress(pct); if (pct >= 55) setIsScratchedEnough(true);
+      };
+
+      const openWhatsApp = () => {
+        if (!prize) return; const link = WA_BASE + encodeURIComponent(prize.code); window.open(link, "_blank");
+      };
+
+      const blue = "#3f51b5"; const yellow = "#f4c400"; const red = "#d32f2f";
+
+      return (
+        <div className="min-h-screen w-full flex items-center justify-center py-8 px-4" style={{ background: "linear-gradient(135deg, #FFE9E6 0%, #FFF7CC 45%, #E6FFF7 100%)" }}>
+          <div className="w-full max-w-2xl">
+            {/* Título */}
+            <h1 className="text-center tracking-wide" style={{ color: red, fontFamily: "'Sink', Georgia, Cambria, 'Times New Roman', serif" }}>
+              <span className="block text-3xl sm:text-5xl font-black uppercase">Raspa y Gana</span>
+            </h1>
+
+            {/* Logo bajo el título (subible) */}
+            <div className="mt-3 flex items-center justify-center gap-3">
+              <img
+                src={logoUrl || "https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg"}
+                alt="El Chiflido"
+                className="h-14 sm:h-20"
+                style={{ filter: "drop-shadow(0 3px 0 #2dd4bf)" }}
+              />
+              <label className="text-xs sm:text-sm font-semibold cursor-pointer px-3 py-1.5 rounded-full border shadow-sm"
+                    style={{ background: "#fff", borderColor: "#e5e7eb", color: "#111827" }}>
+                Subir logo
+                <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                  const f = e.target.files && e.target.files[0];
+                  if (!f) return;
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    const url = reader.result;
+                    setLogoUrl(url);
+                    try { localStorage.setItem("chiflido_logo_url", String(url)); } catch {}
+                  };
+                  reader.readAsDataURL(f);
+                }} />
+              </label>
+            </div>
+
+            <p className="mt-4 text-center text-lg sm:text-xl" style={{ color: blue, fontFamily: "'Sink', Georgia, Cambria, serif" }}>
+              Raspa y descubre el regalo que tenemos para ti
+            </p>
+
+            {/* Área de premio con fondo amarillo y canvas encima */}
+            <div ref={containerRef} className="mt-6 rounded-md overflow-hidden border" style={{ borderColor: "#e5e7eb" }}>
+              <div className="relative" style={{ background: yellow, height: 260 }}>
+                {/* Contenido que se revela */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+                  <div className="text-2xl font-black text-neutral-900">{prize?.title}</div>
+                  <div className="text-neutral-800 mt-1">{prize?.desc}</div>
+                  <div className="mt-3 inline-flex items-center gap-2 bg-white/90 px-3 py-1.5 rounded-full border" style={{ borderColor: "#e5e7eb" }}>
+                    <span className="text-xs font-semibold" style={{ color: blue }}>Código</span>
+                    <span className="font-mono text-sm text-neutral-900">{prize?.code}</span>
+                  </div>
+                </div>
+
+                {/* Capa a raspar */}
+                <canvas
+                  ref={canvasRef}
+                  className="absolute inset-0 w-full h-full select-none touch-none"
+                  onMouseDown={handleStart}
+                  onMouseMove={handleMove}
+                  onMouseUp={handleEnd}
+                  onMouseLeave={handleEnd}
+                  onTouchStart={handleStart}
+                  onTouchMove={handleMove}
+                  onTouchEnd={handleEnd}
+                />
+              </div>
+            </div>
+
+            {/* Botón único centrado (verde) */}
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={openWhatsApp}
+                disabled={!isScratchedEnough}
+                className="px-6 sm:px-8 py-3 rounded-full font-bold shadow text-white disabled:opacity-60 disabled:cursor-not-allowed"
+                style={{ background: "#25D366" }}
+              >
+                PRESIONA AQUÍ Y RECLAMA EL PREMIO
+              </button>
+            </div>
+
+            {/* Recuadro rojo de instrucciones */}
+            <div className="mt-6">
+              <div
+                className="mx-auto max-w-xl rounded-2xl border shadow-sm px-4 py-3 text-center"
+                style={{ background: "#dc2626", borderColor: "#b91c1c", color: "#ffffff" }}
+              >
+                <span className="inline-block text-base sm:text-lg" style={{ fontFamily: "'Sink', Georgia, Cambria, 'Times New Roman', serif", fontWeight: 400 }}>🎉 ¡CANJEA TU PREMIO!</span>
+                <p className="mt-1 text-base sm:text-lg" style={{ fontFamily: "'Sink', Georgia, Cambria, serif" }}>
+                  Presiona el <b>botón verde</b>, te llevamos a WhatsApp.
+                </p>
+                <p className="mt-1 text-lg sm:text-2xl font-extrabold" style={{ fontFamily: "'Sink', Georgia, Cambria, serif" }}>
+                  Escribe tu <b>código</b> y ¡listo!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App/>);
+  </script>
+</body>
+</html>
