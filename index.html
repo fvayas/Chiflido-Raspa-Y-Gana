@@ -6,9 +6,9 @@
   <title>Raspa y Gana — El Chiflido</title>
   <meta name="description" content="Raspa, revela tu premio y canjéalo por WhatsApp.">
 
-  <!-- Preload webfont (asegúrate de subirla a /fonts/Sink-Regular.woff y opcionalmente .woff2) -->
-  <link rel="preload" href="fonts/Sink-Regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/Sink-Regular.woff"  as="font" type="font/woff"  crossorigin>
+  <!-- PRELOAD de la fuente (SOLO .woff) -->
+  <!-- ⬇️ Si tu repo no se llama Chiflido-Raspa-Y-Gana, cambia ese segmento -->
+  <link rel="preload" href="/Chiflido-Raspa-Y-Gana/fonts/Sink-Regular.woff" as="font" type="font/woff" crossorigin>
 
   <!-- Montserrat para textos secundarios -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,12 +16,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* Sink Regular */
+    /* Sink (SOLO .woff, ruta ABSOLUTA para GitHub Pages) */
+    /* ⬇️ Si tu repo no se llama Chiflido-Raspa-Y-Gana, cambia ese segmento */
     @font-face{
       font-family: 'Sink';
-      src:
-        url('fonts/Sink-Regular.woff2') format('woff2'),
-        url('fonts/Sink-Regular.woff') format('woff');
+      src: url('/Chiflido-Raspa-Y-Gana/fonts/Sink-Regular.woff') format('woff');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -88,7 +87,7 @@
     .cta:active{ transform:scale(.98); } .cta:disabled{ opacity:.6; cursor:not-allowed; }
 
     .help{ margin:18px auto 0; width:min(92vw, 640px); border:1px solid #b91c1c; background:#dc2626; color:#fff; border-radius:16px; padding:12px 14px; text-align:center; box-shadow:0 10px 20px rgba(220,38,38,.18); font-family:var(--mont); }
-    .help h3{ margin:4px 0 6px; font-size:clamp(18px,5vw,30px); font-family: var(--sink); font-weight: 400; }
+    .help h3{ margin:4px 0 6px; font-size:clamp(22px,6vw,36px); font-family: var(--sink); font-weight: 400; }
     .help p{ margin:4px 0; font-size:clamp(16px,4.6vw,22px); }
 
     .socials{ margin:26px auto 0; display:flex; justify-content:center; gap:14px; }
@@ -192,7 +191,7 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       lastWidth = size;
 
-      // capa negra con mensaje
+      // capa negra con mensaje (sin animación)
       ctx.globalCompositeOperation = 'source-over';
       ctx.fillStyle = '#000'; ctx.fillRect(0,0,size,size);
 
