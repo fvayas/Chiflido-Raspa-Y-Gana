@@ -6,6 +6,9 @@
   <title>Raspa y Gana — El Chiflido</title>
   <meta name="description" content="Raspa, revela tu premio y canjéalo por WhatsApp.">
 
+  <!-- Preload de la fuente (misma ruta que en el repo) -->
+  <link rel="preload" href="fonts/Sink-Regular.woff" as="font" type="font/woff" crossorigin>
+
   <!-- Montserrat para textos secundarios -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +18,9 @@
     /* Carga Sink (Regular) desde tu repo: /fonts/Sink-Regular.woff */
     @font-face{
       font-family: 'Sink';
-      src: url('fonts/Sink-Regular.woff') format('woff');
+      src:
+        url('fonts/Sink-Regular.woff2') format('woff2'),
+        url('fonts/Sink-Regular.woff') format('woff');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -34,7 +39,7 @@
     body{
       margin:0;
       font-family: var(--sink);
-      font-synthesis: weight; /* permite bold sintético para Sink Regular */
+      font-synthesis: weight; /* bold sintético para Sink Regular si hace falta */
       background: linear-gradient(135deg, #FFE9E6 0%, #FFF7CC 45%, #E6FFF7 100%);
       color:#111;
     }
@@ -66,11 +71,6 @@
                 font-weight:800; font-size:clamp(13px,4.6vw,18px); box-shadow:0 4px 10px rgba(0,0,0,.06); }
 
     canvas.scratch{ position:absolute; inset:0; }
-
-    /* Pista animada arriba del título del overlay */
-    .hint{ pointer-events:none; position:absolute; left:0; right:0; top:8%; display:flex; align-items:center; justify-content:center; transition:opacity .3s ease; }
-    .hint > div{ color:#fff; background:rgba(0,0,0,.5); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); padding:6px 12px; border-radius:999px; font-weight:700; display:inline-flex; gap:8px; align-items:center; animation:nudgeX 1.6s ease-in-out infinite; box-shadow:0 4px 10px rgba(0,0,0,.25); }
-    @keyframes nudgeX{ 0%,100%{ transform:translateX(-10px); } 50%{ transform:translateX(10px); } }
 
     /* CTA centrado y adaptado a mobile */
     .cta{
@@ -117,10 +117,6 @@
       </div>
 
       <canvas id="cover" class="scratch"></canvas>
-
-      <div class="hint" id="hint" aria-hidden="true">
-        <div><span aria-hidden="true">👉</span> <span>Desliza para raspar</span></div>
-      </div>
     </section>
 
     <button id="cta" class="cta" disabled>PRESIONA AQUÍ Y RECLAMA EL PREMIO</button>
@@ -168,7 +164,6 @@
     const canvas = document.getElementById('cover');
     const card   = document.getElementById('card');
     const ctx    = canvas.getContext('2d', { willReadFrequently: true });
-    const hint   = document.getElementById('hint');
     const CTA    = document.getElementById('cta');
     const pvTitle= document.getElementById('pv-title');
     const pvDesc = document.getElementById('pv-desc');
@@ -200,7 +195,7 @@
       ctx.globalCompositeOperation = 'source-over';
       ctx.fillStyle = '#000'; ctx.fillRect(0,0,size,size);
 
-      // texto del overlay (dos líneas)
+      // texto del overlay (dos líneas) usando Sink
       const fam = "Sink, Georgia, Cambria, 'Times New Roman', serif";
       const line1 = "Raspa aquí para";
       const line2 = "descubrir tu premio";
@@ -208,10 +203,10 @@
       ctx.fillStyle = 'rgba(255,255,255,0.97)';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = `700 ${fontSize}px ${fam}`;
+      ctx.font = `800 ${fontSize}px ${fam}`;
       const maxW = size - 24;
       while ((ctx.measureText(line1).width > maxW || ctx.measureText(line2).width > maxW) && fontSize > 14) {
-        fontSize -= 1; ctx.font = `700 ${fontSize}px ${fam}`;
+        fontSize -= 1; ctx.font = `800 ${fontSize}px ${fam}`;
       }
       const lh = Math.floor(fontSize * 1.25);
       ctx.fillText(line1, size/2, size/2 - lh/2);
@@ -219,7 +214,6 @@
 
       ctx.globalCompositeOperation = 'destination-out'; // raspar borra
       CTA.disabled = true;
-      hint.style.opacity = 1;
     }
 
     function getPos(e){
@@ -229,7 +223,7 @@
     }
     function scratch(x,y){ ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI*2); ctx.fill(); }
 
-    function onStart(e){ e.preventDefault(); drawing = true; hint.style.opacity = 0; const p = getPos(e); scratch(p.x,p.y); }
+    function onStart(e){ e.preventDefault(); drawing = true; const p = getPos(e); scratch(p.x,p.y); }
     function onMove(e){ if(!drawing) return; e.preventDefault(); const p = getPos(e); scratch(p.x,p.y); }
     function onEnd(){ drawing = false; checkProgress(); }
 
@@ -254,17 +248,16 @@
 
     window.addEventListener('resize', () => setupCanvas());
 
-    // --- Init: esperar fuente Sink antes de pintar en canvas ---
+    // --- Init: esperar la fuente Sink antes de pintar en canvas (iOS/Android) ---
     async function init(){
       setupPrize();
       try{
         if (document.fonts && document.fonts.load){
-          await Promise.all([
-            document.fonts.load("700 28px Sink"),
-            document.fonts.ready
-          ]);
+          // Carga el peso 400 (Regular) que declaramos en @font-face
+          await document.fonts.load("400 28px Sink");
+          await document.fonts.ready;
         }
-      }catch(e){}
+      }catch(e){ /* ignorar */ }
       setupCanvas();
     }
     init();
