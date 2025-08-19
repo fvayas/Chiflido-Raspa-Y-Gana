@@ -6,8 +6,9 @@
   <title>Raspa y Gana — El Chiflido</title>
   <meta name="description" content="Raspa, revela tu premio y canjéalo por WhatsApp.">
 
-  <!-- Preload de la fuente (misma ruta que en el repo) -->
-  <link rel="preload" href="fonts/Sink-Regular.woff" as="font" type="font/woff" crossorigin>
+  <!-- Preload webfont (asegúrate de subirla a /fonts/Sink-Regular.woff y opcionalmente .woff2) -->
+  <link rel="preload" href="fonts/Sink-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/Sink-Regular.woff"  as="font" type="font/woff"  crossorigin>
 
   <!-- Montserrat para textos secundarios -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* Carga Sink (Regular) desde tu repo: /fonts/Sink-Regular.woff */
+    /* Sink Regular */
     @font-face{
       font-family: 'Sink';
       src:
@@ -30,20 +31,22 @@
       --sink: 'Sink', Georgia, Cambria, 'Times New Roman', serif;
       --mont: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
       --blue: #3f51b5;
-      --red: #d32f2f;
+      --red:  #d32f2f;
       --yellow: #f4c400;
       --green: #25D366;
     }
 
     *{ box-sizing: border-box; }
+    html, body{ height:100%; }
     body{
       margin:0;
       font-family: var(--sink);
-      font-synthesis: weight; /* bold sintético para Sink Regular si hace falta */
+      font-synthesis: weight;
       background: linear-gradient(135deg, #FFE9E6 0%, #FFF7CC 45%, #E6FFF7 100%);
       color:#111;
     }
     .wrap{ max-width:760px; margin:0 auto; padding:24px 16px 44px; }
+
     .title{
       margin:0; text-align:center; color:var(--red);
       text-transform:uppercase; letter-spacing:.5px; font-weight:900;
@@ -55,41 +58,34 @@
       font-weight:600; font-size:clamp(20px,6vw,36px); line-height:1.25; max-width:42ch;
     }
 
-    /* Recuadro cuadrado (mobile first: más compacto) */
+    /* Recuadro cuadrado compacto */
     .card{ margin:20px auto 0; width:min(90vw, 320px); aspect-ratio:1/1; border-radius:14px;
            border:1px solid #e5e7eb; overflow:hidden; position:relative; background:var(--yellow);
            box-shadow:0 8px 22px rgba(0,0,0,.08); }
     @media (min-width: 640px){
       .card{ width:min(86vw, 360px); }
     }
+
     .reveal{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:16px; }
     .reveal .t1{ font-weight:900; font-size:clamp(22px,6.2vw,38px); }
     .reveal .t2{ opacity:.95; margin-top:8px; font-size:clamp(15px,4.8vw,22px); font-weight:600; }
     .code-chip{ margin-top:14px; display:inline-flex; gap:10px; align-items:center; background:rgba(255,255,255,.96);
                 border:1px solid #e5e7eb; border-radius:999px; padding:8px 14px;
-                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
                 font-weight:800; font-size:clamp(13px,4.6vw,18px); box-shadow:0 4px 10px rgba(0,0,0,.06); }
 
     canvas.scratch{ position:absolute; inset:0; }
 
-    /* CTA centrado y adaptado a mobile */
+    /* CTA centrado */
     .cta{
-      display:block;
-      margin:24px auto 0;
-      width:min(92vw, 26rem); /* más angosto en mobile */
-      padding:14px 20px;
-      border-radius:999px; border:0;
-      background:var(--green); color:#fff;
-      font-weight:900; letter-spacing:.4px;
-      font-size:clamp(16px,4.8vw,22px);
-      box-shadow:0 12px 26px rgba(37,211,102,.30);
-      cursor:pointer; transition:transform .18s ease, opacity .18s ease;
+      display:block; margin:24px auto 0; width:min(92vw, 26rem);
+      padding:14px 20px; border-radius:999px; border:0; background:var(--green); color:#fff;
+      font-weight:900; letter-spacing:.4px; font-size:clamp(16px,4.8vw,22px);
+      box-shadow:0 12px 26px rgba(37,211,102,.30); cursor:pointer;
+      transition:transform .18s ease, opacity .18s ease;
     }
-    @media (min-width: 640px){
-      .cta{ width:min(86vw, 30rem); padding:16px 22px; }
-    }
-    .cta:active{ transform:scale(.98); }
-    .cta:disabled{ opacity:.6; cursor:not-allowed; }
+    @media (min-width: 640px){ .cta{ width:min(86vw, 30rem); padding:16px 22px; } }
+    .cta:active{ transform:scale(.98); } .cta:disabled{ opacity:.6; cursor:not-allowed; }
 
     .help{ margin:18px auto 0; width:min(92vw, 640px); border:1px solid #b91c1c; background:#dc2626; color:#fff; border-radius:16px; padding:12px 14px; text-align:center; box-shadow:0 10px 20px rgba(220,38,38,.18); font-family:var(--mont); }
     .help h3{ margin:4px 0 6px; font-size:clamp(18px,5vw,30px); font-family: var(--sink); font-weight: 400; }
@@ -160,7 +156,7 @@
       return list[Math.floor(Math.random()*list.length)];
     }
 
-    // ---- Refs ----
+    // ---- Refs y elementos ----
     const canvas = document.getElementById('cover');
     const card   = document.getElementById('card');
     const ctx    = canvas.getContext('2d', { willReadFrequently: true });
@@ -173,6 +169,10 @@
 
     let drawing = false;
     let prize = null;
+
+    // —— Bloqueo anti-repintado durante 4 minutos desde el primer raspado
+    let persistUntil = 0; // timestamp ms
+    let lastWidth = 0;
 
     function setupPrize(){
       prize = pickPrize(PRIZES);
@@ -190,12 +190,12 @@
       canvas.style.width  = size + "px";
       canvas.style.height = size + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      lastWidth = size;
 
-      // capa negra
+      // capa negra con mensaje
       ctx.globalCompositeOperation = 'source-over';
       ctx.fillStyle = '#000'; ctx.fillRect(0,0,size,size);
 
-      // texto del overlay (dos líneas) usando Sink
       const fam = "Sink, Georgia, Cambria, 'Times New Roman', serif";
       const line1 = "Raspa aquí para";
       const line2 = "descubrir tu premio";
@@ -223,7 +223,7 @@
     }
     function scratch(x,y){ ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI*2); ctx.fill(); }
 
-    function onStart(e){ e.preventDefault(); drawing = true; const p = getPos(e); scratch(p.x,p.y); }
+    function onStart(e){ e.preventDefault(); drawing = true; if(Date.now() > persistUntil){ persistUntil = Date.now() + 4*60*1000; } const p = getPos(e); scratch(p.x,p.y); }
     function onMove(e){ if(!drawing) return; e.preventDefault(); const p = getPos(e); scratch(p.x,p.y); }
     function onEnd(){ drawing = false; checkProgress(); }
 
@@ -246,18 +246,32 @@
     canvas.addEventListener('touchmove', onMove, { passive:false });
     canvas.addEventListener('touchend', onEnd);
 
-    window.addEventListener('resize', () => setupCanvas());
+    function guardedResize(){
+      const now = Date.now();
+      if (now < persistUntil) return; // aún bloqueado, no repintar
+      const w = Math.floor(card.getBoundingClientRect().width);
+      if (Math.abs(w - (lastWidth || 0)) > 2) setupCanvas();
+    }
+
+    // Observadores que no repintan durante el bloqueo
+    let ro;
+    if (window.ResizeObserver){
+      ro = new ResizeObserver(guardedResize);
+      ro.observe(card);
+    }
+    window.addEventListener('resize', guardedResize);
+    window.addEventListener('orientationchange', guardedResize);
+    document.addEventListener('visibilitychange', guardedResize);
 
     // --- Init: esperar la fuente Sink antes de pintar en canvas (iOS/Android) ---
     async function init(){
       setupPrize();
       try{
         if (document.fonts && document.fonts.load){
-          // Carga el peso 400 (Regular) que declaramos en @font-face
           await document.fonts.load("400 28px Sink");
           await document.fonts.ready;
         }
-      }catch(e){ /* ignorar */ }
+      }catch(e){ /* ignore */ }
       setupCanvas();
     }
     init();
