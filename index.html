@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Raspa y Gana — El Chiflido</title>
   <meta name="description" content="Raspa, revela tu premio y canjéalo por WhatsApp.">
+
+  <!-- Montserrat para textos secundarios -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    /* Tipografía: usará Sink si está instalada en el dispositivo */
-    @font-face {
+    /* Carga Sink (Regular) desde tu repo: /fonts/Sink-Regular.woff */
+    @font-face{
       font-family: 'Sink';
-      src: local('Sink'), local('Sink Regular'), local('Sink-Regular');
+      src: url('fonts/Sink-Regular.woff') format('woff');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
     }
-    :root {
+
+    :root{
       --sink: 'Sink', Georgia, Cambria, 'Times New Roman', serif;
       --mont: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
       --blue: #3f51b5;
@@ -25,125 +29,77 @@
       --yellow: #f4c400;
       --green: #25D366;
     }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
+
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
       font-family: var(--sink);
+      font-synthesis: weight; /* permite bold sintético para Sink Regular */
       background: linear-gradient(135deg, #FFE9E6 0%, #FFF7CC 45%, #E6FFF7 100%);
-      color: #111;
+      color:#111;
     }
-    .wrap {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 24px 16px 40px;
+    .wrap{ max-width:760px; margin:0 auto; padding:24px 16px 44px; }
+    .title{
+      margin:0; text-align:center; color:var(--red);
+      text-transform:uppercase; letter-spacing:.5px; font-weight:900;
+      font-size:clamp(28px,7vw,48px); line-height:1.05;
     }
-    h1.title {
-      margin: 0;
-      text-align: center;
-      color: var(--red);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      font-weight: 900;
-      font-size: clamp(28px, 6vw, 48px);
-      line-height: 1.05;
+    .logo{ display:block; margin:12px auto 0; height:clamp(56px,12vw,84px); filter:drop-shadow(0 3px 0 #2dd4bf); }
+    .lead{
+      margin:16px auto 0; text-align:center; color:var(--blue);
+      font-weight:600; font-size:clamp(20px,6vw,36px); line-height:1.25; max-width:42ch;
     }
-    .logo {
-      display: block;
-      margin: 12px auto 0;
-      height: clamp(56px, 10vw, 84px);
-      filter: drop-shadow(0 3px 0 #2dd4bf);
+
+    /* Recuadro cuadrado (mobile first: más compacto) */
+    .card{ margin:20px auto 0; width:min(90vw, 320px); aspect-ratio:1/1; border-radius:14px;
+           border:1px solid #e5e7eb; overflow:hidden; position:relative; background:var(--yellow);
+           box-shadow:0 8px 22px rgba(0,0,0,.08); }
+    @media (min-width: 640px){
+      .card{ width:min(86vw, 360px); }
     }
-    .lead {
-      margin: 14px auto 0;
-      text-align: center;
-      color: var(--blue);
-      font-weight: 600;
-      font-size: clamp(22px, 5vw, 40px);
-      line-height: 1.2;
-      max-width: 42ch;
+    .reveal{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:16px; }
+    .reveal .t1{ font-weight:900; font-size:clamp(22px,6.2vw,38px); }
+    .reveal .t2{ opacity:.95; margin-top:8px; font-size:clamp(15px,4.8vw,22px); font-weight:600; }
+    .code-chip{ margin-top:14px; display:inline-flex; gap:10px; align-items:center; background:rgba(255,255,255,.96);
+                border:1px solid #e5e7eb; border-radius:999px; padding:8px 14px;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+                font-weight:800; font-size:clamp(13px,4.6vw,18px); box-shadow:0 4px 10px rgba(0,0,0,.06); }
+
+    canvas.scratch{ position:absolute; inset:0; }
+
+    /* Pista animada arriba del título del overlay */
+    .hint{ pointer-events:none; position:absolute; left:0; right:0; top:8%; display:flex; align-items:center; justify-content:center; transition:opacity .3s ease; }
+    .hint > div{ color:#fff; background:rgba(0,0,0,.5); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); padding:6px 12px; border-radius:999px; font-weight:700; display:inline-flex; gap:8px; align-items:center; animation:nudgeX 1.6s ease-in-out infinite; box-shadow:0 4px 10px rgba(0,0,0,.25); }
+    @keyframes nudgeX{ 0%,100%{ transform:translateX(-10px); } 50%{ transform:translateX(10px); } }
+
+    /* CTA centrado y adaptado a mobile */
+    .cta{
+      display:block;
+      margin:24px auto 0;
+      width:min(92vw, 26rem); /* más angosto en mobile */
+      padding:14px 20px;
+      border-radius:999px; border:0;
+      background:var(--green); color:#fff;
+      font-weight:900; letter-spacing:.4px;
+      font-size:clamp(16px,4.8vw,22px);
+      box-shadow:0 12px 26px rgba(37,211,102,.30);
+      cursor:pointer; transition:transform .18s ease, opacity .18s ease;
     }
-    .card {
-      margin: 22px auto 0;
-      width: min(90vw, 420px);
-      aspect-ratio: 1 / 1; /* cuadrado */
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      overflow: hidden;
-      position: relative;
-      background: var(--yellow);
-      box-shadow: 0 8px 22px rgba(0,0,0,.08);
+    @media (min-width: 640px){
+      .cta{ width:min(86vw, 30rem); padding:16px 22px; }
     }
-    .reveal {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center; padding: 16px;
-    }
-    .reveal .t1 { font-weight: 900; font-size: clamp(24px, 6vw, 40px); }
-    .reveal .t2 { opacity: .95; margin-top: 8px; font-size: clamp(16px, 4.8vw, 24px); font-weight: 600; }
-    .code-chip {
-      margin-top: 14px;
-      display: inline-flex; gap: 10px; align-items: center;
-      background: rgba(255,255,255,.96);
-      border: 1px solid #e5e7eb; border-radius: 999px;
-      padding: 8px 14px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-weight: 800;
-      font-size: clamp(14px, 4.6vw, 18px);
-      box-shadow: 0 4px 10px rgba(0,0,0,.06);
-    }
-    .scratch {
-      position: absolute; inset: 0;
-    }
-    .hint {
-      pointer-events: none;
-      position: absolute; left: 0; right: 0; top: 8%;
-      display: flex; align-items: center; justify-content: center;
-      transition: opacity .3s ease;
-    }
-    .hint > div {
-      color: #fff; background: rgba(0,0,0,.5); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
-      padding: 6px 12px; border-radius: 999px; font-weight: 700;
-      display: inline-flex; gap: 8px; align-items: center;
-      animation: nudgeX 1.6s ease-in-out infinite;
-      box-shadow: 0 4px 10px rgba(0,0,0,.25);
-    }
-    @keyframes nudgeX { 0%,100% { transform: translateX(-10px); } 50% { transform: translateX(10px); } }
-    .cta {
-      margin: 28px auto 0;
-      width: min(92vw, 640px);
-      padding: clamp(14px, 3.8vw, 22px) clamp(18px, 4.2vw, 28px);
-      border-radius: 999px; border: 0;
-      background: var(--green); color: #fff; font-weight: 900; letter-spacing: .4px;
-      font-size: clamp(18px, 5vw, 32px);
-      box-shadow: 0 12px 26px rgba(37,211,102,.35);
-      cursor: pointer;
-      transition: transform .18s ease, filter .18s ease, opacity .18s ease;
-    }
-    .cta:active { transform: scale(.98); }
-    .cta:disabled { opacity: .6; cursor: not-allowed; }
-    .help {
-      margin: 18px auto 0;
-      width: min(92vw, 640px);
-      border: 1px solid #b91c1c;
-      background: #dc2626; color: #fff;
-      border-radius: 16px; padding: 12px 14px; text-align: center;
-      box-shadow: 0 10px 20px rgba(220,38,38,.18);
-      font-family: var(--mont);
-    }
-    .help h3 { margin: 4px 0 6px; font-size: clamp(18px, 5vw, 30px); }
-    .help p { margin: 4px 0; font-size: clamp(16px, 4.6vw, 22px); }
-    .socials {
-      margin: 26px auto 0; display: flex; justify-content: center; gap: 14px;
-    }
-    .socials a {
-      width: 44px; height: 44px; display: grid; place-items: center;
-      background: #fff; border: 1px solid #e5e7eb; border-radius: 999px;
-      box-shadow: 0 6px 16px rgba(0,0,0,.08);
-    }
-    .ig { color: #E1306C; } .fb { color: #1877F2; } .tt { color: #000; }
-    /* Utilidades */
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .cta:active{ transform:scale(.98); }
+    .cta:disabled{ opacity:.6; cursor:not-allowed; }
+
+    .help{ margin:18px auto 0; width:min(92vw, 640px); border:1px solid #b91c1c; background:#dc2626; color:#fff; border-radius:16px; padding:12px 14px; text-align:center; box-shadow:0 10px 20px rgba(220,38,38,.18); font-family:var(--mont); }
+    .help h3{ margin:4px 0 6px; font-size:clamp(18px,5vw,30px); font-family: var(--sink); font-weight: 400; }
+    .help p{ margin:4px 0; font-size:clamp(16px,4.6vw,22px); }
+
+    .socials{ margin:26px auto 0; display:flex; justify-content:center; gap:14px; }
+    .socials a{ width:44px; height:44px; display:grid; place-items:center; background:#fff; border:1px solid #e5e7eb; border-radius:999px; box-shadow:0 6px 16px rgba(0,0,0,.08); }
+    .ig{ color:#E1306C; } .fb{ color:#1877F2; } .tt{ color:#000; }
+
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   </style>
 </head>
 <body>
@@ -176,15 +132,15 @@
     </div>
 
     <nav class="socials" aria-label="Redes sociales">
-      <a class="ig" href="https://www.instagram.com/elchiflido_mx/" target="_blank" rel="noopener"> 
+      <a class="ig" href="https://www.instagram.com/elchiflido_mx/" target="_blank" rel="noopener">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm10 2H7a3 3 0 00-3 3v10a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3zm-5 3a5 5 0 110 10 5 5 0 010-10zm0 2.2A2.8 2.8 0 1014.8 12 2.8 2.8 0 0012 9.2zM17.8 6.2a1.2 1.2 0 11-1.2 1.2 1.2 1.2 0 011.2-1.2z"/></svg>
         <span class="sr-only">Instagram</span>
       </a>
-      <a class="tt" href="https://www.tiktok.com/@elchiflido_mx" target="_blank" rel="noopener"> 
+      <a class="tt" href="https://www.tiktok.com/@elchiflido_mx" target="_blank" rel="noopener">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3a5.5 5.5 0 004.5 2.2v3.05a8.52 8.52 0 01-4.5-1.35V14a5.5 5.5 0 11-5.5-5.5c.34 0 .67.03 1 .1v3.2a2.5 2.5 0 102 2.4V3h2.5z"/></svg>
         <span class="sr-only">TikTok</span>
       </a>
-      <a class="fb" href="https://www.facebook.com/elchiflldomx" target="_blank" rel="noopener"> 
+      <a class="fb" href="https://www.facebook.com/elchiflldomx" target="_blank" rel="noopener">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8h2.5l.5-3h-3V9a1 1 0 011-1h2V5h-2a4 4 0 00-4 4v2H8v3h2.5v8h3z"/></svg>
         <span class="sr-only">Facebook</span>
       </a>
@@ -203,13 +159,12 @@
     ];
 
     function pickPrize(list){
-      const roll = Math.random() * 100;
-      let acc = 0;
+      const roll = Math.random() * 100; let acc = 0;
       for (const p of list){ acc += p.prob; if (roll <= acc) return p; }
       return list[Math.floor(Math.random()*list.length)];
     }
 
-    // ---- UI refs ----
+    // ---- Refs ----
     const canvas = document.getElementById('cover');
     const card   = document.getElementById('card');
     const ctx    = canvas.getContext('2d', { willReadFrequently: true });
@@ -234,35 +189,35 @@
     function setupCanvas(){
       const rect = card.getBoundingClientRect();
       const size = Math.floor(rect.width);
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const dpr  = Math.max(1, window.devicePixelRatio || 1);
       canvas.width  = Math.floor(size * dpr);
       canvas.height = Math.floor(size * dpr);
       canvas.style.width  = size + "px";
       canvas.style.height = size + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      // Capa negra
+      // capa negra
       ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0,0,size,size);
+      ctx.fillStyle = '#000'; ctx.fillRect(0,0,size,size);
 
-      // Texto en dos líneas, autoajustado
+      // texto del overlay (dos líneas)
+      const fam = "Sink, Georgia, Cambria, 'Times New Roman', serif";
       const line1 = "Raspa aquí para";
       const line2 = "descubrir tu premio";
-      let fontSize = Math.min(36, Math.max(16, Math.floor(size * 0.10)));
+      let fontSize = Math.min(32, Math.max(14, Math.floor(size * 0.10)));
       ctx.fillStyle = 'rgba(255,255,255,0.97)';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = `800 ${fontSize}px Sink, Georgia, Cambria, 'Times New Roman', serif`;
+      ctx.font = `700 ${fontSize}px ${fam}`;
       const maxW = size - 24;
       while ((ctx.measureText(line1).width > maxW || ctx.measureText(line2).width > maxW) && fontSize > 14) {
-        fontSize -= 1; ctx.font = `800 ${fontSize}px Sink, Georgia, Cambria, 'Times New Roman', serif`;
+        fontSize -= 1; ctx.font = `700 ${fontSize}px ${fam}`;
       }
       const lh = Math.floor(fontSize * 1.25);
       ctx.fillText(line1, size/2, size/2 - lh/2);
       ctx.fillText(line2, size/2, size/2 + lh/2);
 
-      ctx.globalCompositeOperation = 'destination-out'; // rascar borra
+      ctx.globalCompositeOperation = 'destination-out'; // raspar borra
       CTA.disabled = true;
       hint.style.opacity = 1;
     }
@@ -272,9 +227,7 @@
       if (e.touches && e.touches[0]) { const t = e.touches[0]; return { x: t.clientX - r.left, y: t.clientY - r.top }; }
       return { x: e.clientX - r.left, y: e.clientY - r.top };
     }
-    function scratch(x,y){
-      ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI*2); ctx.fill();
-    }
+    function scratch(x,y){ ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI*2); ctx.fill(); }
 
     function onStart(e){ e.preventDefault(); drawing = true; hint.style.opacity = 0; const p = getPos(e); scratch(p.x,p.y); }
     function onMove(e){ if(!drawing) return; e.preventDefault(); const p = getPos(e); scratch(p.x,p.y); }
@@ -288,28 +241,33 @@
       if (pct >= 55) CTA.disabled = false;
     }
 
-    function openWhatsApp(){
-      if (!prize) return;
-      const link = WA_BASE + encodeURIComponent(prize.code);
-      window.open(link, "_blank");
-    }
+    function openWhatsApp(){ if(!prize) return; const link = WA_BASE + encodeURIComponent(prize.code); window.open(link, "_blank"); }
+    CTA.addEventListener('click', openWhatsApp);
 
-    // Eventos
     canvas.addEventListener('mousedown', onStart);
     canvas.addEventListener('mousemove', onMove);
     canvas.addEventListener('mouseup', onEnd);
     canvas.addEventListener('mouseleave', onEnd);
-    canvas.addEventListener('touchstart', onStart, { passive: false });
-    canvas.addEventListener('touchmove', onMove, { passive: false });
+    canvas.addEventListener('touchstart', onStart, { passive:false });
+    canvas.addEventListener('touchmove', onMove, { passive:false });
     canvas.addEventListener('touchend', onEnd);
 
     window.addEventListener('resize', () => setupCanvas());
 
-    CTA.addEventListener('click', openWhatsApp);
-
-    // Init
-    setupPrize();
-    requestAnimationFrame(setupCanvas); // espera a layout para size correcto
+    // --- Init: esperar fuente Sink antes de pintar en canvas ---
+    async function init(){
+      setupPrize();
+      try{
+        if (document.fonts && document.fonts.load){
+          await Promise.all([
+            document.fonts.load("700 28px Sink"),
+            document.fonts.ready
+          ]);
+        }
+      }catch(e){}
+      setupCanvas();
+    }
+    init();
   </script>
 </body>
 </html>
