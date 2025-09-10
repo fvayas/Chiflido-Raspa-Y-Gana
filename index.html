@@ -6,16 +6,15 @@
   <title>Raspa y Gana — El Chiflido</title>
   <meta name="description" content="Raspa, revela tu premio y canjéalo por WhatsApp.">
 
-  <!-- Preload de la fuente Sink -->
+  <!-- Preload de Sink (solo WOFF) -->
   <link rel="preload" href="fonts/Sink-Regular.woff" as="font" type="font/woff" crossorigin>
 
-  <!-- Montserrat para textos secundarios -->
+  <!-- Montserrat -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* Fuente Sink */
     @font-face {
       font-family: 'Sink';
       src: url('fonts/Sink-Regular.woff') format('woff');
@@ -43,112 +42,80 @@
     .wrap { max-width: 760px; margin: 0 auto; padding: 24px 16px 44px; }
 
     .title {
-      margin: 0;
-      text-align: center;
-      color: var(--red);
-      text-transform: uppercase;
-      font-weight: 900;
-      font-size: clamp(28px, 7vw, 48px);
+      text-align: center; color: var(--red);
+      text-transform: uppercase; letter-spacing: .5px; font-weight: 900;
+      font-size: clamp(28px, 7vw, 48px); line-height: 1.05;
     }
     .logo {
-      display: block;
-      margin: 12px auto 0;
-      height: clamp(56px, 12vw, 84px);
+      display: block; margin: 12px auto 0; height: clamp(56px, 12vw, 84px);
       filter: drop-shadow(0 3px 0 #2dd4bf);
     }
     .lead {
-      margin: 16px auto 0;
-      text-align: center;
-      color: var(--blue);
-      font-weight: 600;
-      font-size: clamp(20px, 6vw, 36px);
-      max-width: 42ch;
+      margin: 16px auto 0; text-align: center; color: var(--blue);
+      font-weight: 600; font-size: clamp(20px, 6vw, 36px);
     }
 
     .card {
       margin: 20px auto 0;
-      width: min(90vw, 320px);
-      aspect-ratio: 1/1;
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      overflow: hidden;
-      position: relative;
-      background: var(--yellow);
+      width: min(90vw, 320px); aspect-ratio: 1/1;
+      border-radius: 14px; border: 1px solid #e5e7eb;
+      overflow: hidden; position: relative; background: var(--yellow);
       box-shadow: 0 8px 22px rgba(0,0,0,.08);
     }
     @media (min-width: 640px) {
       .card { width: min(86vw, 360px); }
     }
 
-    .reveal {
-      position: absolute; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      text-align: center; padding: 16px;
-    }
-    .reveal .t1 { font-weight: 900; font-size: clamp(22px, 6vw, 38px); }
-    .reveal .t2 { margin-top: 8px; font-size: clamp(15px, 5vw, 22px); font-weight: 600; }
+    .reveal { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px; }
+    .reveal .t1 { font-weight: 900; font-size: clamp(22px,6.2vw,38px); font-family: var(--sink); }
+    .reveal .t2 { opacity: .95; margin-top: 8px; font-size: clamp(15px,4.8vw,22px); font-weight: 600; font-family: var(--mont); }
     .code-chip {
       margin-top: 14px; display: inline-flex; gap: 10px; align-items: center;
-      background: rgba(255,255,255,.96);
-      border: 1px solid #e5e7eb;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-family: ui-monospace, monospace;
-      font-weight: 800; font-size: clamp(13px, 5vw, 18px);
-      box-shadow: 0 4px 10px rgba(0,0,0,.06);
+      background: rgba(255,255,255,.96); border: 1px solid #e5e7eb; border-radius: 999px; padding: 8px 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 800; font-size: clamp(13px,4.6vw,18px); box-shadow: 0 4px 10px rgba(0,0,0,.06);
     }
 
     canvas.scratch { position: absolute; inset: 0; }
 
     .cta {
-      display: block; margin: 24px auto 0;
-      width: min(92vw, 26rem);
-      padding: 14px 20px;
-      border-radius: 999px;
-      background: var(--green); color: #fff; border: none;
-      font-weight: 900;
-      font-size: clamp(16px, 5vw, 22px);
-      box-shadow: 0 12px 26px rgba(37,211,102,.3);
-      cursor: pointer;
+      display: block; margin: 24px auto 0; width: min(92vw, 26rem);
+      padding: 14px 20px; border-radius: 999px; border: 0;
+      background: var(--green); color: #fff;
+      font-weight: 900; font-size: clamp(16px,4.8vw,22px);
+      box-shadow: 0 12px 26px rgba(37,211,102,.30); cursor: pointer;
+      transition: transform .18s ease, opacity .18s ease;
     }
+    .cta:active { transform: scale(.98); }
     .cta:disabled { opacity: .6; cursor: not-allowed; }
 
     .help {
-      margin: 18px auto 0;
-      width: min(92vw, 640px);
-      border: 1px solid #b91c1c;
-      background: #dc2626;
-      color: #fff;
-      border-radius: 16px;
-      padding: 12px 14px;
-      text-align: center;
-      font-family: var(--mont);
+      margin: 18px auto 0; width: min(92vw, 640px);
+      border: 1px solid #b91c1c; background: #dc2626; color: #fff;
+      border-radius: 16px; padding: 12px 14px; text-align: center;
+      box-shadow: 0 10px 20px rgba(220,38,38,.18); font-family: var(--mont);
     }
-    .help h3 {
-      margin: 4px 0 6px;
-      font-size: clamp(20px, 6vw, 32px);
-      font-family: var(--sink);
-    }
-    .help p { margin: 4px 0; font-size: clamp(16px, 5vw, 22px); }
+    .help h3 { margin: 4px 0 6px; font-size: clamp(22px,6vw,36px); font-family: var(--sink); }
+    .help p { margin: 4px 0; font-size: clamp(16px,4.6vw,22px); }
 
-    .socials {
-      margin: 26px auto 0;
-      display: flex; justify-content: center; gap: 14px;
-    }
+    /* Redes sociales */
+    .socials { margin: 26px auto 0; display: flex; justify-content: center; gap: 14px; }
     .socials a {
-      width: 44px; height: 44px;
-      display: grid; place-items: center;
-      background: #fff;
-      border-radius: 999px;
-      border: 1px solid #e5e7eb;
-      box-shadow: 0 6px 16px rgba(0,0,0,.08);
+      width: 44px; height: 44px; display: grid; place-items: center;
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 999px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.08); text-decoration: none; color: inherit;
     }
+    .socials a svg { width: 22px; height: 22px; }
+    .ig { color: #E1306C; }
+    .tt { color: #000; }
+    .fb { color: #1877F2; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1 class="title">Raspa y Gana</h1>
     <img class="logo" src="https://cracks.agency/wp-content/uploads/2025/03/logo-chiflido.png" alt="El Chiflido">
+
     <p class="lead">Raspa y descubre el regalo que tenemos para ti</p>
 
     <section class="card" id="card">
@@ -164,14 +131,32 @@
 
     <div class="help">
       <h3>🎉 ¡CANJEA TU PREMIO!</h3>
-      <p>Presiona el <b>botón verde</b>, te llevamos a WhatsApp.</p>
-      <p><b>Escribe el código en un mensaje</b> y ¡listo!</p>
+      <p>Presiona el <strong>botón verde</strong>, te llevamos a WhatsApp.</p>
+      <p><strong>Escribe el código en un mensaje</strong> y ¡listo!</p>
     </div>
 
-    <nav class="socials">
-      <a href="https://www.instagram.com/elchiflido_mx/" target="_blank">IG</a>
-      <a href="https://www.tiktok.com/@elchiflido_mx" target="_blank">TT</a>
-      <a href="https://www.facebook.com/elchiflldomx" target="_blank">FB</a>
+    <!-- Redes sociales -->
+    <nav class="socials" aria-label="Redes sociales">
+      <!-- Instagram -->
+      <a class="ig" href="https://www.instagram.com/elchiflido_mx/" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm10 2H7a3 3 0 00-3 3v10a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3zm-5 3a5 5 0 110 10 5 5 0 010-10zm0 2.2A2.8 2.8 0 1014.8 12 2.8 2.8 0 0012 9.2zM17.8 6.2a1.2 1.2 0 11-1.2 1.2 1.2 1.2 0 011.2-1.2z"/>
+        </svg>
+      </a>
+
+      <!-- TikTok -->
+      <a class="tt" href="https://www.tiktok.com/@elchiflido_mx" target="_blank" rel="noopener" aria-label="TikTok">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16.5 3a5.5 5.5 0 004.5 2.2v3.05a8.52 8.52 0 01-4.5-1.35V14a5.5 5.5 0 11-5.5-5.5c.34 0 .67.03 1 .1v3.2a2.5 2.5 0 102 2.4V3h2.5z"/>
+        </svg>
+      </a>
+
+      <!-- Facebook -->
+      <a class="fb" href="https://www.facebook.com/elchiflldomx" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M13.5 22v-8h2.5l.5-3h-3V9a1 1 0 011-1h2V5h-2a4 4 0 00-4 4v2H8v3h2.5v8h3z"/>
+        </svg>
+      </a>
     </nav>
   </div>
 
@@ -179,109 +164,84 @@
     const PRIZES = [
       { title: "Jamaica gratis", desc: "Recibe una jamaica gratis por una compra superior a $8.", code: "PROMO1202", prob: 25 },
       { title: "¡Hoy todos tus tacos a $1!", desc: "Aplica para ti y tu acompañante.", code: "PROMO2203", prob: 20 },
-      { title: "2 Flautas + 2 Bebidas por $12", desc: "Aplica para servirse en el local.", code: "PROMO3204", prob: 18 },
-      { title: "2 Órdenes de birria + bebida por $14", desc: "Aplica para servirse en el local.", code: "PROMO4205", prob: 15 },
+      { title: "2 Flautas + 2 Bebidas por $12", desc: "Presenta tu código al pagar.", code: "PROMO3204", prob: 18 },
+      { title: "2 Órdenes de birria + bebida por $14", desc: "Sujeto a disponibilidad.", code: "PROMO4205", prob: 15 },
       { title: "Mini marquesita GRATIS", desc: "Por compra de 2 platos + 2 bebidas.", code: "PROMO5206", prob: 12 },
-      { title: "2 Chilaquiles + bebida por $14", desc: "Aplica para servirse en el local.", code: "PROMO6207", prob: 10 },
+      { title: "2 Chilaquiles + bebida por $14", desc: "Disponible solo en local.", code: "PROMO6207", prob: 10 }
     ];
 
-    function pickPrize(list){
+    function pickPrize(list) {
       const roll = Math.random() * 100; let acc = 0;
-      for (const p of list){ acc += p.prob; if (roll <= acc) return p; }
+      for (const p of list) { acc += p.prob; if (roll <= acc) return p; }
       return list[Math.floor(Math.random()*list.length)];
     }
 
     const canvas = document.getElementById('cover');
     const card   = document.getElementById('card');
-    const ctx    = canvas.getContext('2d');
+    const ctx    = canvas.getContext('2d',{willReadFrequently:true});
     const CTA    = document.getElementById('cta');
     const pvTitle= document.getElementById('pv-title');
     const pvDesc = document.getElementById('pv-desc');
     const pvCode = document.getElementById('pv-code');
+    const WA_BASE= "https://api.whatsapp.com/send?phone=593979342895&text=Hola%20mi%20código%20es:%20";
 
-    const WA_BASE = "https://api.whatsapp.com/send?phone=593979342895&text=Hola,%20mi%20código%20es:%20";
-
-    let drawing = false; let prize = null;
-    let persistUntil = 0; let lastWidth = 0;
-
-    async function ensureSinkLoaded() {
-      try {
-        if (!document.fonts) return;
-        await document.fonts.load("400 24px 'Sink'");
-        await document.fonts.ready;
-      } catch(_) {}
-    }
+    let drawing=false, prize=null;
 
     function setupPrize(){
       prize = pickPrize(PRIZES);
       pvTitle.textContent = prize.title;
-      pvDesc.textContent  = prize.desc;
-      pvCode.textContent  = prize.code;
+      pvDesc.textContent = prize.desc;
+      pvCode.textContent = prize.code;
     }
 
     function setupCanvas(){
       const rect = card.getBoundingClientRect();
       const size = Math.floor(rect.width);
-      const dpr  = window.devicePixelRatio || 1;
-      canvas.width  = Math.floor(size * dpr);
-      canvas.height = Math.floor(size * dpr);
-      canvas.style.width  = size + "px";
-      canvas.style.height = size + "px";
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      lastWidth = size;
+      const dpr  = Math.max(1,window.devicePixelRatio||1);
+      canvas.width=size*dpr; canvas.height=size*dpr;
+      canvas.style.width=size+"px"; canvas.style.height=size+"px";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
 
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = '#000'; ctx.fillRect(0,0,size,size);
+      ctx.globalCompositeOperation='source-over';
+      ctx.fillStyle='#000'; ctx.fillRect(0,0,size,size);
 
-      const FACE = "'Sink', Georgia, Cambria, 'Times New Roman', serif";
-      const line1 = "Raspa aquí para";
-      const line2 = "descubrir tu premio";
-      let fontSize = Math.min(34, Math.max(14, Math.floor(size * 0.10)));
-      ctx.fillStyle = 'rgba(255,255,255,0.97)';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.font = `800 ${fontSize}px ${FACE}`;
-      const lh = Math.floor(fontSize * 1.25);
-      ctx.fillText(line1, size/2, size/2 - lh/2);
-      ctx.fillText(line2, size/2, size/2 + lh/2);
+      const line1="Raspa aquí para"; const line2="descubrir tu premio";
+      let fontSize=Math.min(32,Math.max(14,Math.floor(size*0.10)));
+      ctx.fillStyle='rgba(255,255,255,0.97)'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font=`800 ${fontSize}px Sink, Georgia, Cambria`;
+      const maxW=size-24;
+      while((ctx.measureText(line1).width>maxW||ctx.measureText(line2).width>maxW)&&fontSize>14){
+        fontSize--; ctx.font=`800 ${fontSize}px Sink, Georgia, Cambria`;
+      }
+      const lh=Math.floor(fontSize*1.25);
+      ctx.fillText(line1,size/2,size/2-lh/2);
+      ctx.fillText(line2,size/2,size/2+lh/2);
 
-      ctx.globalCompositeOperation = 'destination-out';
-      CTA.disabled = true;
+      ctx.globalCompositeOperation='destination-out';
+      CTA.disabled=true;
     }
 
-    function getPos(e){
-      const r = canvas.getBoundingClientRect();
-      if (e.touches && e.touches[0]) { const t = e.touches[0]; return { x: t.clientX - r.left, y: t.clientY - r.top }; }
-      return { x: e.clientX - r.left, y: e.clientY - r.top };
-    }
-    function scratch(x,y){ ctx.beginPath(); ctx.arc(x, y, 22, 0, Math.PI*2); ctx.fill(); }
+    function getPos(e){ const r=canvas.getBoundingClientRect(); if(e.touches){const t=e.touches[0]; return {x:t.clientX-r.left,y:t.clientY-r.top};} return {x:e.clientX-r.left,y:e.clientY-r.top}; }
+    function scratch(x,y){ ctx.beginPath(); ctx.arc(x,y,22,0,Math.PI*2); ctx.fill(); }
 
-    function onStart(e){ e.preventDefault(); drawing = true; if(Date.now() > persistUntil){ persistUntil = Date.now() + 4*60*1000; } const p = getPos(e); scratch(p.x,p.y); }
-    function onMove(e){ if(!drawing) return; e.preventDefault(); const p = getPos(e); scratch(p.x,p.y); }
-    function onEnd(){ drawing = false; checkProgress(); }
+    function onStart(e){ e.preventDefault(); drawing=true; const p=getPos(e); scratch(p.x,p.y); }
+    function onMove(e){ if(!drawing) return; e.preventDefault(); const p=getPos(e); scratch(p.x,p.y); }
+    function onEnd(){ drawing=false; checkProgress(); }
 
     function checkProgress(){
-      const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
-      let cleared = 0;
-      for (let i=3; i<data.length; i+=4) if (data[i] === 0) cleared++;
-      const pct = cleared / (data.length/4) * 100;
-      if (pct >= 55) CTA.disabled = false;
+      const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+      let cleared=0; for(let i=3;i<data.length;i+=4) if(data[i]===0) cleared++;
+      if(cleared/(data.length/4)*100>=55) CTA.disabled=false;
     }
 
-    function openWhatsApp(){ if(!prize) return; window.open(WA_BASE + prize.code, "_blank"); }
-    CTA.addEventListener('click', openWhatsApp);
+    CTA.addEventListener('click',()=>{ if(prize){ window.open(WA_BASE+encodeURIComponent(prize.code),"_blank"); } });
+    canvas.addEventListener('mousedown',onStart); canvas.addEventListener('mousemove',onMove);
+    canvas.addEventListener('mouseup',onEnd); canvas.addEventListener('mouseleave',onEnd);
+    canvas.addEventListener('touchstart',onStart,{passive:false});
+    canvas.addEventListener('touchmove',onMove,{passive:false});
+    canvas.addEventListener('touchend',onEnd);
 
-    canvas.addEventListener('mousedown', onStart);
-    canvas.addEventListener('mousemove', onMove);
-    canvas.addEventListener('mouseup', onEnd);
-    canvas.addEventListener('touchstart', onStart, { passive:false });
-    canvas.addEventListener('touchmove', onMove, { passive:false });
-    canvas.addEventListener('touchend', onEnd);
-
-    async function init(){
-      setupPrize();
-      await ensureSinkLoaded();
-      setupCanvas();
-    }
+    async function init(){ setupPrize(); try{ if(document.fonts&&document.fonts.load){ await document.fonts.load("400 28px Sink"); await document.fonts.ready; } }catch(e){} setupCanvas(); }
     init();
   </script>
 </body>
